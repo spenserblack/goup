@@ -1,0 +1,11 @@
+#!/bin/sh
+GO_HOST="go.dev"
+GO_DL_URL="$GO_HOST/dl/"
+
+get_latest_release() {
+	local URL="$GO_DL_URL?mode=json"
+	latest_release="$(curl -fsS "https://$URL" | jq -r '.[0].version')"
+}
+
+get_latest_release
+echo $latest_release
