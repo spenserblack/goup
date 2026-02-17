@@ -7,5 +7,11 @@ get_latest_release() {
 	latest_release="$(curl -fsS "https://$URL" | jq -r '.[0].version')"
 }
 
+get_installed_release() {
+	installed_release="$(go version | awk '/go version / { printf $3 }')"
+}
+
+get_installed_release
 get_latest_release
-echo $latest_release
+echo "installed: $installed_release"
+echo "latest available: $latest_release"
