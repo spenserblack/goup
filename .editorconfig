@@ -1,0 +1,44 @@
+root = true
+
+[*]
+end_of_line = LF
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# Batch files
+[*.{bat,cmd}]
+end_of_line = CRLF
+indent_style = tab
+
+# Go
+[*.go]
+indent_style = tab
+indent_size = 4
+
+# Makefile
+[Makefile]
+indent_style = tab
+indent_size = 8
+
+# PowerShell
+[*.ps1]
+end_of_line = CRLF
+indent_style = space
+indent_size = 4
+
+# Shell
+[goup]
+indent_style = tab
+indent_size = 4
+[*.{sh,bash}]
+indent_style = tab
+indent_size = 4
+[*.zsh]
+indent_style = space
+indent_size = 2
+
+# YAML
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
