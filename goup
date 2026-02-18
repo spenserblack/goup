@@ -11,7 +11,19 @@ get_installed_release() {
 	installed_release="$(go version | awk '/go version / { printf $3 }')"
 }
 
-get_installed_release
-get_latest_release
-echo "installed: $installed_release"
-echo "latest available: $latest_release"
+check() {
+	get_installed_release
+	get_latest_release
+	echo "Current version: $installed_release"
+	echo "Latest available version: $latest_release"
+
+	if [ "$installed_release" = "$latest_release" ]; then
+		echo "Your version is up to date"
+	elif [ "$installed_release" \< "$latest_release" ]; then
+		echo "A newer version is available"
+	else
+		echo "You have a version installed that is higher than the latest release"
+	fi
+}
+
+check
