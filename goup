@@ -2,6 +2,43 @@
 GO_HOST="go.dev"
 GO_DL_URL="$GO_HOST/dl/"
 
+# Asks a user for confirmation. Exits on a "no" answer.
+# Arguments:
+# 1. message (excluding choices)
+# 2. default
+confirm() {
+	case "$2" in
+		y|Y)
+			local yes=Y
+			local no=n
+			local default=y
+			;;
+		n|N)
+			local yes=y
+			local no=N
+			local default=n
+			;;
+		*)
+			echo "unreachable" >&2
+			exit 1
+			;;
+		esac
+	read -p "$1 [$yes/$no] " choice
+	if [ "$choice" = "" ]; then
+		choice="$default"
+	fi
+	case "$choice" in
+		y|Y)
+			;;
+		n|N)
+			exit 0
+			;;
+		*)
+			echo "invalid choice"
+			confirm "$1" "$2"
+	esac
+}
+
 get_latest_release() {
 	local URL="$GO_DL_URL?mode=json"
 	latest_release="$(curl -fsS "https://$URL" | jq -r '.[0].version')"
@@ -9,6 +46,40 @@ get_latest_release() {
 
 get_installed_release() {
 	installed_release="$(go version | awk '/go version / { printf $3 }')"
+}
+
+# Downloads and installs the latest release.
+# Arguments:
+# 1. The go version. For example `go1.25`.
+download_and_install() {
+	case "$(uname -s)" in
+		Linux)
+			local os="linux"
+			;;
+		*)
+			echo "Unsupported kernel: $(uname -s)" >&2
+			exit 1
+			;;
+	esac
+	case "$(uname -m)" in
+		x86_64)
+			local arch="amd64"
+			;;
+		*)
+			echo "Unsupported architecture: $(uname -m)" >&2
+			exit 1
+			;;
+	esac
+	local full_version="$1.$os-$arch"
+	echo "Installing $full_version"
+	confirm "This script will ask for sudo access. Is that okay?" "N"
+	local go_path="/usr/local/go"
+	echo "Deleting $go_path"
+	sudo rm -rf "$go_path"
+	local url="$GO_DL_URL$full_version.tar.gz"
+	echo "Fetching and installing $url"
+	curl -fsSL "https://$url" | sudo tar -C /usr/local -xzf -
+
 }
 
 check() {
@@ -26,4 +97,20 @@ check() {
 	fi
 }
 
-check
+update() {
+	get_installed_release
+	get_latest_release
+
+	if [ "$installed_release" = "$latest_release" ]; then
+		echo "Your version is up to date"
+		exit 0
+	elif [ "$installed_release" \< "$latest_release" ]; then
+		download_and_install "$latest_release"
+		exit 0
+	else
+		echo "You have a version installed that is higher than the latest release"
+		exit 0
+	fi
+}
+
+update
