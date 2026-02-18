@@ -79,7 +79,7 @@ download_and_install() {
 	esac
 	local full_version="$1.$os-$arch"
 	echo "Installing $full_version"
-	confirm "This script will ask for sudo access. Is that okay?" "N"
+	confirm "This script will ask for sudo access and modify the contents under /usr/local/. Is that okay?" "N"
 	local go_path="/usr/local/go"
 	echo "Deleting $go_path"
 	sudo rm -rf "$go_path"
