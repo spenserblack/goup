@@ -1,6 +1,13 @@
 #!/bin/sh
 GO_HOST="go.dev"
 GO_DL_URL="$GO_HOST/dl/"
+usage="goup [SUBCOMMAND]
+Unofficial tool to update go
+
+SUBCOMMANDS:
+	check		Compare the currently installed version to the latest available
+	update		Update to the latest version
+"
 
 # Asks a user for confirmation. Exits on a "no" answer.
 # Arguments:
@@ -113,4 +120,18 @@ update() {
 	fi
 }
 
-update
+help() {
+	echo -n "$usage"
+}
+
+case "$1" in
+	check)
+		check
+		;;
+	update)
+		update
+		;;
+	*)
+		help >&2
+		exit 1
+esac
