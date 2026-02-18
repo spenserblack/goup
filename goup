@@ -17,12 +17,16 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 GO_HOST="go.dev"
 GO_DL_URL="$GO_HOST/dl/"
-usage="goup [SUBCOMMAND]
+usage="goup [OPTIONS] [SUBCOMMAND]
 Unofficial tool to update go
+
+OPTIONS:
+	-h, --help	Show this help text and exit
 
 SUBCOMMANDS:
 	check		Compare the currently installed version to the latest available
 	update		Update to the latest version
+	help		Show this help text and exit
 "
 
 # Asks a user for confirmation. Exits on a "no" answer.
@@ -141,6 +145,9 @@ help() {
 }
 
 case "$1" in
+	-h|--help|help)
+		help
+		;;
 	check)
 		check
 		;;
