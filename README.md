@@ -10,6 +10,10 @@ downloads the archive with the new files, and unpacks them.
 
 ## Installation
 
+*Never download and install untrusted scripts.* This script can take destructive
+actions like `sudo rm -rf`. Review this script carefully and understand the risks
+before you install and use it.
+
 ### Unix
 
 ```shell
@@ -22,6 +26,9 @@ This repository doesn't provide a Windows version, as [`winget`][winget] is prob
 enough.
 
 #### Example
+
+This is an example, not a recommendation. You should decide for yourself if you should use
+`winget` or a different installation method.
 
 ```dosbatch
 winget upgrade --id GoLang.Go --source winget
