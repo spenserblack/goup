@@ -1,1 +1,1 @@
-/go version / { printf $3 }
+/go[0-9]+\.[0-9]+\.[0-9]+/ { printf $1 }
