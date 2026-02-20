@@ -15,6 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+BASE_DIR="$(dirname $(dirname $(readlink -f "$0")))"
 GO_HOST="go.dev"
 GO_DL_URL="$GO_HOST/dl/"
 usage="goup [OPTIONS] [SUBCOMMAND]
@@ -72,7 +73,7 @@ get_latest_release() {
 }
 
 get_installed_release() {
-	installed_release="$(go version | awk '/go version / { printf $3 }')"
+	installed_release="$(go version | awk -f "$BASE_DIR/share/goup/go-version.awk")"
 }
 
 # Downloads and installs the latest release.
