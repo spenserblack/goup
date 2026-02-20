@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-BASE_DIR="$(dirname $(dirname $(readlink -f "$0")))"
+BASE_DIR="$(dirname "$(dirname "$(readlink -f "$0")")")"
 GO_HOST="go.dev"
 GO_DL_URL="$GO_HOST/dl/"
 GO_PATH="/usr/local/go"
@@ -38,21 +38,22 @@ SUBCOMMANDS:
 confirm() {
 	case "$2" in
 		y|Y)
-			local yes=Y
-			local no=n
-			local default=y
+			yes=Y
+			no=n
+			default=y
 			;;
 		n|N)
-			local yes=y
-			local no=N
-			local default=n
+			yes=y
+			no=N
+			default=n
 			;;
 		*)
 			echo "unreachable" >&2
 			exit 1
 			;;
 		esac
-	read -p "$1 [$yes/$no] " choice
+	printf "%s [%s/%s] " "$1" "$yes" "$no"
+	read -r choice
 	if [ "$choice" = "" ]; then
 		choice="$default"
 	fi
@@ -69,7 +70,7 @@ confirm() {
 }
 
 get_latest_release() {
-	local URL="$GO_DL_URL?mode=json"
+	URL="$GO_DL_URL?mode=json"
 	latest_release="$(curl -fsS "https://$URL" | jq -r '.[0].version')"
 }
 
@@ -83,7 +84,7 @@ get_installed_release() {
 download_and_install() {
 	case "$(uname -s)" in
 		Linux)
-			local os="linux"
+			os="linux"
 			;;
 		*)
 			echo "Unsupported kernel: $(uname -s)" >&2
@@ -92,19 +93,19 @@ download_and_install() {
 	esac
 	case "$(uname -m)" in
 		x86_64)
-			local arch="amd64"
+			arch="amd64"
 			;;
 		*)
 			echo "Unsupported architecture: $(uname -m)" >&2
 			exit 1
 			;;
 	esac
-	local full_version="$1.$os-$arch"
+	full_version="$1.$os-$arch"
 	echo "Installing $full_version"
 	confirm "This script will ask for sudo access and modify the contents under /usr/local/. Is that okay?" "N"
 	echo "Deleting $GO_PATH"
 	sudo rm -rf "$GO_PATH"
-	local url="$GO_DL_URL$full_version.tar.gz"
+	url="$GO_DL_URL$full_version.tar.gz"
 	echo "Fetching and installing $url"
 	curl -fsSL "https://$url" | sudo tar -C /usr/local -xzf -
 
@@ -118,7 +119,7 @@ check() {
 
 	if [ "$installed_release" = "$latest_release" ]; then
 		echo "Your version is up to date"
-	elif [ "$installed_release" \< "$latest_release" ]; then
+	elif [ "$(expr "$installed_release" \< "$latest_release" )" = 1 ]; then
 		echo "A newer version is available"
 	else
 		echo "You have a version installed that is higher than the latest release"
@@ -132,7 +133,7 @@ update() {
 	if [ "$installed_release" = "$latest_release" ]; then
 		echo "Your version is up to date"
 		exit 0
-	elif [ "$installed_release" \< "$latest_release" ]; then
+	elif [ "$(expr "$installed_release" \< "$latest_release" )" = 1 ]; then
 		download_and_install "$latest_release"
 		exit 0
 	else
@@ -142,7 +143,7 @@ update() {
 }
 
 help() {
-	echo -n "$usage"
+	printf "%s" "$usage"
 }
 
 case "$1" in
